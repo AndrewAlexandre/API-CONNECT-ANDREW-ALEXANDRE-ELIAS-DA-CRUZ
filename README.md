@@ -1,4 +1,5 @@
 # ANDREW ALEXANDRE ELIAS DA CRUZ
+
 # ATIVIDADE 2 DESENVOLVIMENTO BACK-END
 
 # API Connect — Gerenciamento de Usuários
@@ -10,6 +11,8 @@ API REST desenvolvida em Python com Flask para gerenciamento de usuários, como 
 O projeto consiste em uma API REST para gerenciamento de usuários. A aplicação permite listar, buscar, cadastrar, atualizar e excluir usuários por meio de requisições HTTP.
 
 Os dados são trabalhados no formato JSON e armazenados temporariamente em uma lista em memória. Dessa forma, os dados permanecem disponíveis enquanto o servidor estiver em execução, mas são perdidos quando a aplicação é encerrada.
+
+A aplicação foi organizada em arquivos separados para facilitar a manutenção e a compreensão do código, dividindo a inicialização da aplicação, as rotas e os dados e regras de validação.
 
 ## 2. Tecnologias utilizadas
 
@@ -27,12 +30,23 @@ ATIVIDADE 2 BACKEND/
 ├── venv/
 ├── .gitignore
 ├── app.py
+├── routes.py
+├── dados.py
 ├── requirements.txt
 └── README.md
 
+
 ### app.py
 
-Arquivo principal da aplicação. Contém a configuração do Flask, os dados simulados dos usuários, as funções auxiliares de validação e geração de IDs e as rotas da API.
+Arquivo responsável pela inicialização da aplicação Flask e pelo registro das rotas da API.
+
+### routes.py
+
+Arquivo responsável pelas rotas e pelos controladores das operações HTTP da API, incluindo GET, POST, PUT, PATCH e DELETE.
+
+### dados.py
+
+Arquivo responsável pelos dados dos usuários armazenados em memória, pela validação dos dados recebidos e pela geração dos próximos IDs.
 
 ### requirements.txt
 
@@ -54,40 +68,50 @@ Arquivo utilizado para indicar arquivos e diretórios que não devem ser enviado
 
 O ambiente virtual foi criado utilizando o seguinte comando:
 
+powershell
 python -m venv venv
+
 
 Para ativar o ambiente virtual no PowerShell:
 
+powershell
 .\venv\Scripts\Activate.ps1
+
 
 Com o ambiente virtual ativado, o Flask foi instalado utilizando:
 
+powershell
 pip install flask
+
 
 As dependências instaladas foram registradas no arquivo requirements.txt através do comando:
 
+powershell
 pip freeze > requirements.txt
+
 
 ## 5. Execução da aplicação
 
 Com o ambiente virtual ativado, a API pode ser iniciada utilizando:
 
+powershell
 python app.py
 
-Após a inicialização, o servidor fica disponível localmente no endereço:
 
+Após a inicialização, o servidor fica disponível localmente no endereço:
 http://127.0.0.1:5000
+
 
 ## 6. Endpoints da API
 
 | Método | Endpoint | Descrição | Status de sucesso |
 |---|---|---|---|
 | GET | /usuarios | Lista todos os usuários | 200 |
-| GET | /usuario/<id> | Busca um usuário pelo ID | 200 |
-| POST | /usuario | Cadastra um novo usuário | 201 |
-| PUT | /usuario/<id> | Atualiza completamente um usuário | 200 |
-| PATCH | /usuario/<id> | Atualiza parcialmente um usuário | 200 |
-| DELETE | /usuario/<id> | Exclui um usuário | 200 |
+| GET | /usuarios/<id> | Busca um usuário pelo ID | 200 |
+| POST | /usuarios | Cadastra um novo usuário | 201 |
+| PUT | /usuarios/<id> | Atualiza completamente um usuário | 200 |
+| PATCH | /usuarios/<id> | Atualiza parcialmente um usuário | 200 |
+| DELETE | /usuarios/<id> | Exclui um usuário | 200 |
 
 ## 7. Validação dos dados
 
@@ -97,7 +121,7 @@ No POST e no PUT, os campos nome, email e idade são obrigatórios.
 
 O campo nome deve ser um texto e não pode estar vazio.
 
-O campo email deve ser um texto não vazio e deve conter o caractere @.
+O campo email deve ser um texto não vazio e deve conter o caractere @. A aplicação também verifica se o @ não está no início ou no final do endereço informado.
 
 O campo idade deve ser um número inteiro maior ou igual a zero.
 
@@ -110,7 +134,7 @@ A API também verifica se os campos enviados no PATCH são permitidos.
 A API utiliza códigos de status HTTP para indicar o resultado das operações:
 
 - 200 OK — operação realizada com sucesso.
-- 201 Created — usuário criado com sucesso.
+- 201 Created — novo usuário criado com sucesso.
 - 400 Bad Request — dados ausentes ou inválidos.
 - 404 Not Found — usuário não encontrado.
 
@@ -120,63 +144,83 @@ As respostas de erro são retornadas em formato JSON, utilizando a chave "erro" 
 
 ### Listar usuários
 
+http
 GET /usuarios
+
 
 ### Buscar usuário por ID
 
-GET /usuario/1
+http
+GET /usuarios/1
+
 
 ### Cadastrar usuário
 
-POST /usuario
+http
+POST /usuarios
+
 
 Corpo da requisição:
 
+json
 {
     "nome": "Carlos",
     "email": "carlos@gmail.com",
     "idade": 25
 }
 
+
 Resposta esperada: 201 Created.
 
 ### Atualizar completamente um usuário
 
-PUT /usuario/1
+http
+PUT /usuarios/1
+
 
 Corpo da requisição:
 
+json
 {
     "nome": "Andrew Alexandre Elias Da Cruz",
     "email": "andrew.novo@gmail.com",
     "idade": 24
 }
 
+
 Resposta esperada: 200 OK.
 
 ### Atualizar parcialmente um usuário
 
-PATCH /usuario/1
+http
+PATCH /usuarios/1
+
 
 Corpo da requisição:
 
+json
 {
     "email": "andrew.novo@gmail.com"
 }
+
 
 Nesse caso, somente o email será alterado.
 
 ### Excluir usuário
 
-DELETE /usuario/1
+http
+DELETE /usuarios/1
+
 
 Resposta esperada: 200 OK.
 
 ## 10. Geração dos IDs
 
-Os usuários são armazenados em uma lista em memória. Para cadastrar um novo usuário, a aplicação identifica o maior ID existente e adiciona 1 ao seu valor para gerar o próximo identificador.
+Os usuários são armazenados em uma lista em memória no arquivo dados.py.
 
-Dessa forma, a aplicação consegue gerar IDs incrementais durante sua execução, mesmo após a remoção de usuários.
+Para cadastrar um novo usuário, a aplicação identifica o maior ID existente e adiciona 1 ao seu valor para gerar o próximo identificador.
+
+Dessa forma, não é necessário informar manualmente o ID durante o cadastro.
 
 ## 11. Idempotência
 
@@ -209,11 +253,17 @@ Foram realizados testes para verificar:
 
 Para esta atividade, não foi utilizado um banco de dados. A persistência foi simulada utilizando uma lista Python armazenada na memória do servidor.
 
-Essa abordagem permite testar as operações de gerenciamento de usuários sem adicionar a complexidade de um banco de dados ao projeto. Como consequência, os dados cadastrados ou modificados são perdidos quando o servidor é encerrado.
+Essa abordagem permite testar as operações de gerenciamento de usuários sem adicionar a complexidade de um banco de dados ao projeto.
+
+Como consequência, os dados cadastrados ou modificados são perdidos quando o servidor é encerrado.
 
 ## 14. Versionamento
 
 O projeto utiliza Git para controle de versão e GitHub para armazenamento e compartilhamento do código-fonte.
+
+O arquivo .gitignore impede que arquivos e diretórios desnecessários, como o ambiente virtual venv, sejam enviados ao repositório.
+
+O arquivo requirements.txt registra as dependências utilizadas pela aplicação, permitindo identificar os pacotes necessários para executar o projeto.
 
 
 
